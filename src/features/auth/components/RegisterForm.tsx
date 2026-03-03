@@ -8,6 +8,17 @@ import { setCredentials, setLoading, setError } from '../../../store/authSlice';
 import type { ApiError } from '../../../services/authService';
 import { authService } from '../../../services/authService';
 
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+
 const registerSchema = z.object({
     firm_name: z.string().min(1, 'Firm Name is required'),
     full_name: z.string().min(1, 'Full Name is required'),
@@ -27,13 +38,15 @@ export const RegisterForm = () => {
     const [apiError, setApiError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const {
-        register,
-        handleSubmit,
-        setError: setFieldError,
-        formState: { errors },
-    } = useForm<RegisterFormData>({
+    const form = useForm<RegisterFormData>({
         resolver: zodResolver(registerSchema),
+        defaultValues: {
+            firm_name: '',
+            full_name: '',
+            email: '',
+            password: '',
+            confirm_password: '',
+        }
     });
 
     const onSubmit = async (data: RegisterFormData) => {
@@ -58,7 +71,7 @@ export const RegisterForm = () => {
         } catch (err: unknown) {
             const error = err as ApiError;
             if (error.field) {
-                setFieldError(error.field as keyof RegisterFormData, { message: error.message });
+                form.setError(error.field as keyof RegisterFormData, { message: error.message });
             } else {
                 setApiError(error.message || 'An unexpected error occurred during registration');
                 dispatch(setError(error.message));
@@ -70,87 +83,124 @@ export const RegisterForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-md w-full mx-auto p-6 bg-white rounded-lg shadow-md border border-gray-100">
-            <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">Create an Account</h2>
+        <div className="max-w-md w-full mx-auto p-8 glass-card bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-white/10 relative z-10 animate-fade-up shadow-xl dark:shadow-none">
+            <h2 className="text-3xl font-bold text-center text-slate-900 dark:text-white mb-6">Create an Account</h2>
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="firm_name">Firm Name</label>
-                <input
-                    {...register('firm_name')}
-                    type="text"
-                    id="firm_name"
-                    disabled={isSubmitting}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500 ${errors.firm_name ? 'border-red-500' : 'border-gray-300'}`}
-                    placeholder="Acme Corp"
-                />
-                {errors.firm_name && <p className="mt-1 text-sm text-red-600">{errors.firm_name.message}</p>}
-            </div>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <FormField
+                        control={form.control}
+                        name="firm_name"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="text-slate-700 dark:text-slate-300">Firm Name</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        className="bg-slate-50 dark:bg-slate-900/50 border-slate-300 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus-visible:ring-blue-500 rounded-xl px-4 py-5"
+                                        placeholder="Acme Corp"
+                                        disabled={isSubmitting}
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <FormMessage className="text-red-500 dark:text-red-400" />
+                            </FormItem>
+                        )}
+                    />
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="full_name">Full Name</label>
-                <input
-                    {...register('full_name')}
-                    type="text"
-                    id="full_name"
-                    disabled={isSubmitting}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500 ${errors.full_name ? 'border-red-500' : 'border-gray-300'}`}
-                    placeholder="John Doe"
-                />
-                {errors.full_name && <p className="mt-1 text-sm text-red-600">{errors.full_name.message}</p>}
-            </div>
+                    <FormField
+                        control={form.control}
+                        name="full_name"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="text-slate-700 dark:text-slate-300">Full Name</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        className="bg-slate-50 dark:bg-slate-900/50 border-slate-300 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus-visible:ring-blue-500 rounded-xl px-4 py-5"
+                                        placeholder="John Doe"
+                                        disabled={isSubmitting}
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <FormMessage className="text-red-500 dark:text-red-400" />
+                            </FormItem>
+                        )}
+                    />
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="email">Email</label>
-                <input
-                    {...register('email')}
-                    type="email"
-                    id="email"
-                    disabled={isSubmitting}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500 ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
-                    placeholder="your.email@example.com"
-                />
-                {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
-            </div>
+                    <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="text-slate-700 dark:text-slate-300">Email</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        className="bg-slate-50 dark:bg-slate-900/50 border-slate-300 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus-visible:ring-blue-500 rounded-xl px-4 py-5"
+                                        placeholder="your.email@example.com"
+                                        type="email"
+                                        disabled={isSubmitting}
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <FormMessage className="text-red-500 dark:text-red-400" />
+                            </FormItem>
+                        )}
+                    />
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="password">Password</label>
-                <input
-                    {...register('password')}
-                    type="password"
-                    id="password"
-                    disabled={isSubmitting}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500 ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
-                    placeholder="••••••••"
-                />
-                {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>}
-            </div>
+                    <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="text-slate-700 dark:text-slate-300">Password</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        className="bg-slate-50 dark:bg-slate-900/50 border-slate-300 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus-visible:ring-blue-500 rounded-xl px-4 py-5"
+                                        placeholder="••••••••"
+                                        type="password"
+                                        disabled={isSubmitting}
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <FormMessage className="text-red-500 dark:text-red-400" />
+                            </FormItem>
+                        )}
+                    />
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="confirm_password">Confirm Password</label>
-                <input
-                    {...register('confirm_password')}
-                    type="password"
-                    id="confirm_password"
-                    disabled={isSubmitting}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500 ${errors.confirm_password ? 'border-red-500' : 'border-gray-300'}`}
-                    placeholder="••••••••"
-                />
-                {errors.confirm_password && <p className="mt-1 text-sm text-red-600">{errors.confirm_password.message}</p>}
-            </div>
+                    <FormField
+                        control={form.control}
+                        name="confirm_password"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="text-slate-700 dark:text-slate-300">Confirm Password</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        className="bg-slate-50 dark:bg-slate-900/50 border-slate-300 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus-visible:ring-blue-500 rounded-xl px-4 py-5"
+                                        placeholder="••••••••"
+                                        type="password"
+                                        disabled={isSubmitting}
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <FormMessage className="text-red-500 dark:text-red-400" />
+                            </FormItem>
+                        )}
+                    />
 
-            {apiError && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-                    <p className="text-sm text-red-600 font-medium">{apiError}</p>
-                </div>
-            )}
+                    {apiError && (
+                        <div className="p-4 bg-red-100 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl">
+                            <p className="text-sm text-red-600 dark:text-red-400 font-medium">{apiError}</p>
+                        </div>
+                    )}
 
-            <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-blue-600 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-                {isSubmitting ? 'Registering...' : 'Register'}
-            </button>
-        </form>
+                    <Button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-full btn-primary py-6 rounded-xl text-lg mt-4"
+                    >
+                        {isSubmitting ? 'Registering...' : 'Register'}
+                    </Button>
+                </form>
+            </Form>
+        </div>
     );
 };
