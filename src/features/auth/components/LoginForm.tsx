@@ -4,7 +4,7 @@ import * as z from 'zod';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../../store';
-import { setCredentials, setLoading, setError } from '../../../store/authSlice';
+import { setCredentials } from '../../../store/authSlice';
 import type { ApiError } from '../../../services/authService';
 import { authService } from '../../../services/authService';
 
@@ -29,8 +29,8 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export const LoginForm = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const [apiError, setApiError] = useState<string | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const form = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema),
@@ -42,9 +42,8 @@ export const LoginForm = () => {
 
     const onSubmit = async (data: LoginFormData) => {
         try {
-            setApiError(null);
-            setIsSubmitting(true);
-            dispatch(setLoading(true));
+            setError(null);
+            setIsLoading(true);
 
             const response = await authService.login(data);
 
@@ -53,16 +52,14 @@ export const LoginForm = () => {
                 navigate('/dashboard');
             }
         } catch (err: unknown) {
-            const error = err as ApiError;
-            if (error.field) {
-                form.setError(error.field as keyof LoginFormData, { message: error.message });
+            const apiErr = err as ApiError;
+            if (apiErr.field) {
+                form.setError(apiErr.field as keyof LoginFormData, { message: apiErr.message });
             } else {
-                setApiError(error.message || 'An unexpected error occurred during login');
-                dispatch(setError(error.message));
+                setError(apiErr.message || 'An unexpected error occurred during login');
             }
         } finally {
-            setIsSubmitting(false);
-            dispatch(setLoading(false));
+            setIsLoading(false);
         }
     };
 
@@ -83,7 +80,7 @@ export const LoginForm = () => {
                                         className="bg-slate-50 dark:bg-slate-900/50 border-slate-300 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus-visible:ring-blue-500 rounded-xl px-4 py-6"
                                         placeholder="your.email@example.com"
                                         type="email"
-                                        disabled={isSubmitting}
+                                        disabled={isLoading}
                                         {...field}
                                     />
                                 </FormControl>
@@ -103,7 +100,7 @@ export const LoginForm = () => {
                                         className="bg-slate-50 dark:bg-slate-900/50 border-slate-300 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus-visible:ring-blue-500 rounded-xl px-4 py-6"
                                         placeholder="••••••••"
                                         type="password"
-                                        disabled={isSubmitting}
+                                        disabled={isLoading}
                                         {...field}
                                     />
                                 </FormControl>
@@ -112,18 +109,18 @@ export const LoginForm = () => {
                         )}
                     />
 
-                    {apiError && (
+                    {error && (
                         <div className="p-4 bg-red-100 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl">
-                            <p className="text-sm text-red-600 dark:text-red-400 font-medium">{apiError}</p>
+                            <p className="text-sm text-red-600 dark:text-red-400 font-medium">{error}</p>
                         </div>
                     )}
 
                     <Button
                         type="submit"
-                        disabled={isSubmitting}
+                        disabled={isLoading}
                         className="w-full btn-primary py-6 rounded-xl text-lg mt-2"
                     >
-                        {isSubmitting ? 'Logging in...' : 'Log In'}
+                        {isLoading ? 'Logging in...' : 'Log In'}
                     </Button>
                 </form>
             </Form>
