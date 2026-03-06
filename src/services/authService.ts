@@ -8,6 +8,13 @@ export interface User {
     full_name: string;
     role: string;
     firm_id: string;
+    firm?: {
+        id: string;
+        name: string;
+        subscription_tier?: string | null;
+        trial_ends_at?: string | null;
+        status?: string | null;
+    };
 }
 
 export interface AuthResponse {
@@ -65,6 +72,28 @@ export const authService = {
     logout: async (): Promise<void> => {
         try {
             await axiosInstance.post('/api/v1/auth/logout');
+        } catch (error) {
+            return handleApiError(error);
+        }
+    },
+    forgotPassword: async (email: string): Promise<void> => {
+        try {
+            await axiosInstance.post('/api/v1/auth/forgot-password', { email });
+        } catch (error) {
+            return handleApiError(error);
+        }
+    },
+    resetPassword: async (data: Record<string, unknown>): Promise<void> => {
+        try {
+            await axiosInstance.post('/api/v1/auth/reset-password', data);
+        } catch (error) {
+            return handleApiError(error);
+        }
+    },
+    acceptInvite: async (data: Record<string, unknown>): Promise<AuthResponse> => {
+        try {
+            const response = await axiosInstance.post<ApiResponse<AuthResponse>>('/api/v1/auth/accept-invite', data);
+            return response.data.data;
         } catch (error) {
             return handleApiError(error);
         }

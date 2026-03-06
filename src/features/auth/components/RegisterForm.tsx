@@ -7,6 +7,7 @@ import { useAppDispatch } from '../../../store';
 import { setCredentials } from '../../../store/authSlice';
 import type { ApiError } from '../../../services/authService';
 import { authService } from '../../../services/authService';
+import { toastSuccess } from '../../../lib/toast';
 
 import {
     Form,
@@ -65,6 +66,7 @@ export const RegisterForm = () => {
 
             if (response && response.user && response.accessToken) {
                 dispatch(setCredentials({ user: response.user, accessToken: response.accessToken }));
+                toastSuccess('Registered successfully');
                 navigate('/dashboard');
             }
         } catch (err: unknown) {

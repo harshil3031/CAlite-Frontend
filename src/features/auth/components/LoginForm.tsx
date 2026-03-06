@@ -7,6 +7,7 @@ import { useAppDispatch } from '../../../store';
 import { setCredentials } from '../../../store/authSlice';
 import type { ApiError } from '../../../services/authService';
 import { authService } from '../../../services/authService';
+import { toastSuccess } from '../../../lib/toast';
 
 import {
     Form,
@@ -49,6 +50,7 @@ export const LoginForm = () => {
 
             if (response && response.user && response.accessToken) {
                 dispatch(setCredentials({ user: response.user, accessToken: response.accessToken }));
+                toastSuccess('Logged in successfully');
                 navigate('/dashboard');
             }
         } catch (err: unknown) {
@@ -114,6 +116,16 @@ export const LoginForm = () => {
                             <p className="text-sm text-red-600 dark:text-red-400 font-medium">{error}</p>
                         </div>
                     )}
+
+                    <div className="flex justify-end">
+                        <button
+                            type="button"
+                            onClick={() => navigate('/forgot-password')}
+                            className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+                        >
+                            Forgot password?
+                        </button>
+                    </div>
 
                     <Button
                         type="submit"
