@@ -181,7 +181,7 @@ describe('Auth Web Frontend', () => {
             const unauthStore = configureStore({
                 reducer: { auth: authReducer },
                 preloadedState: {
-                    auth: { isAuthenticated: false, user: null, accessToken: null }
+                    auth: { isAuthenticated: false, user: null, firm: null, accessToken: null }
                 }
             });
 
@@ -203,7 +203,7 @@ describe('Auth Web Frontend', () => {
             const authStore = configureStore({
                 reducer: { auth: authReducer },
                 preloadedState: {
-                    auth: { isAuthenticated: true, user: {} as any, accessToken: 'token' }
+                    auth: { isAuthenticated: true, user: {} as any, firm: null, accessToken: 'token' }
                 }
             });
 

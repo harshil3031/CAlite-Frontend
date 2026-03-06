@@ -17,7 +17,17 @@ export const setupInterceptors = (_store: Store<RootState>) => {
     store = _store;
 
     axiosInstance.interceptors.request.use((config) => {
-        const token = store.getState().auth.accessToken;
+        // Primary: get from Redux store (in-memory)
+        let token = store?.getState()?.auth?.accessToken ?? null;
+
+        // Fallback: read from localStorage (covers page-reload edge case before store hydrates)
+        if (!token) {
+            try {
+                const raw = localStorage.getItem('calite_auth');
+                if (raw) token = (JSON.parse(raw) as { accessToken?: string }).accessToken ?? null;
+            } catch { /* ignore */ }
+        }
+
         if (token && config.headers) {
             config.headers.Authorization = `Bearer ${token}`;
         }
