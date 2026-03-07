@@ -38,3 +38,23 @@ export const useReactivateUser = () => {
         },
     });
 };
+
+export const useInviteUser = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (data: { email: string; fullName: string; role: string }) => 
+            userService.inviteUser({ 
+                email: data.email, 
+                full_name: data.fullName, 
+                role: data.role 
+            }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['users'] });
+            toastSuccess('User invitation sent successfully');
+        },
+        onError: (err: any) => {
+            toastError(err.message || 'Failed to invite user');
+        },
+    });
+};

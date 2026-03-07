@@ -3,18 +3,26 @@ import { useNavigate } from 'react-router-dom';
 import { useDashboardSummary } from '../hooks/useDashboard';
 import { DashboardGreeting } from '../components/DashboardGreeting';
 import { ClientStatsSection } from '../components/ClientStatsSection';
-import { CompliancePlaceholderSection } from '../components/CompliancePlaceholderSection';
-import { TasksPlaceholderSection } from '../components/TasksPlaceholderSection';
+import RiskSummarySection from '../components/RiskSummarySection';
+import OverdueSection from '../components/OverdueSection';
+import CalendarSection from '../components/CalendarSection';
 import { ActivityPlaceholderSection } from '../components/ActivityPlaceholderSection';
+import { useAppSelector } from '../../../store';
+import SuperAdminDashboardPage from './SuperAdminDashboardPage';
 
 export const DashboardPage = () => {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
     const { data: summaryData, isLoading, error } = useDashboardSummary();
+    const user = useAppSelector((state) => state.auth.user);
 
     const handleRetry = () => {
-        queryClient.invalidateQueries({ queryKey: ['dashboard', 'summary'] });
+        queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     };
+
+    if (user?.role?.toLowerCase() === 'super_admin') {
+        return <SuperAdminDashboardPage />;
+    }
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white pb-12">
@@ -23,7 +31,7 @@ export const DashboardPage = () => {
 
                 {error && (
                     <div className="mb-8 p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 flex justify-between items-center text-red-600 dark:text-red-400 font-medium animate-fade-up">
-                        <span>Unable to load dashboard. Please refresh.</span>
+                        <span>Unable to load dashboard summary. Please refresh.</span>
                         <button
                             onClick={handleRetry}
                             className="bg-red-100 hover:bg-red-200 dark:bg-red-500/20 dark:hover:bg-red-500/30 px-4 py-2 rounded-lg transition-colors border border-red-200 flex items-center gap-2"
@@ -42,7 +50,7 @@ export const DashboardPage = () => {
                         </p>
                         <button
                             onClick={() => navigate('/clients')}
-                            className="btn-primary"
+                            className="px-6 py-2.5 bg-blue-600 text-white rounded-xl shadow-sm hover:bg-blue-700 transition"
                         >
                             Add First Client
                         </button>
@@ -51,27 +59,36 @@ export const DashboardPage = () => {
 
                 {/* Main Stats Area */}
                 <div className="space-y-8 animate-fade-up">
+
+                    {/* Risk Summary */}
                     <div>
-                        <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-white">Client Summary</h2>
-                        <ClientStatsSection
-                            isLoading={isLoading}
-                            data={summaryData?.clients}
-                        />
+                        <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-white">Compliance Risk Summary</h2>
+                        <RiskSummarySection isLoading={isLoading} summary={summaryData} />
                     </div>
 
+                    {/* Overdue List */}
                     <div>
-                        <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-white">Compliance Overview</h2>
-                        <CompliancePlaceholderSection />
+                        <OverdueSection />
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div className="lg:col-span-2">
+                    {/* Calendar Section */}
+                    <div>
+                        <CalendarSection />
+                    </div>
+
+                    {/* Client Stats & Placeholders */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                            <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-white">Client Summary</h2>
+                            <ClientStatsSection
+                                isLoading={isLoading}
+                                data={summaryData?.clients}
+                            />
+                        </div>
+
+                        <div>
                             <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-white">Recent Activity</h2>
                             <ActivityPlaceholderSection />
-                        </div>
-                        <div className="lg:col-span-1">
-                            <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-white">Tasks</h2>
-                            <TasksPlaceholderSection />
                         </div>
                     </div>
                 </div>
@@ -79,3 +96,5 @@ export const DashboardPage = () => {
         </div>
     );
 };
+
+export default DashboardPage;

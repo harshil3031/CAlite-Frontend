@@ -27,8 +27,16 @@ import { AppShell } from './components/layout/AppShell';
 import { DashboardPage } from './features/dashboard/pages/DashboardPage';
 import { FirmSettingsPage } from './features/settings/pages/FirmSettingsPage';
 import { StaffManagementPage } from './features/settings/pages/StaffManagementPage';
+import UsersPage from './features/settings/pages/UsersPage';
 import { ClientsPage } from './features/clients/pages/ClientsPage';
 import { ClientDetailPage } from './features/clients/pages/ClientDetailPage';
+import ImportPage from './features/clients/pages/ImportPage';
+import CompliancePage from './features/compliance/pages/CompliancePage';
+import ComplianceLibraryPage from './features/compliance/pages/ComplianceLibraryPage';
+
+// Platform pages
+import FirmsPage from './features/platform/pages/FirmsPage';
+import TemplatesPage from './features/platform/pages/TemplatesPage';
 
 // Placeholder pages for Layer 3 routes
 const ComingSoonPage = ({ name }: { name: string }) => (
@@ -54,12 +62,20 @@ function App() {
           <Route element={<AppShell />}>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/clients" element={<ClientsPage />} />
+            <Route path="/clients/import" element={<ImportPage />} />
             <Route path="/clients/:id" element={<ClientDetailPage />} />
             <Route path="/settings" element={<FirmSettingsPage />} />
             <Route path="/settings/staff" element={<StaffManagementPage />} />
+            <Route path="/settings/users" element={<UsersPage />} />
 
             {/* Future Layers */}
-            <Route path="/compliance" element={<ComingSoonPage name="Compliance" />} />
+            <Route path="/compliance" element={<CompliancePage />} />
+            <Route path="/compliance/library" element={<ComplianceLibraryPage />} />
+
+            {/* Platform Super Admin Layer 3+ */}
+            <Route path="/platform/firms" element={<FirmsPage />} />
+            <Route path="/platform/templates" element={<TemplatesPage />} />
+
             <Route path="/tasks" element={<ComingSoonPage name="Tasks" />} />
             <Route path="/documents" element={<ComingSoonPage name="Documents" />} />
             <Route path="/billing" element={<ComingSoonPage name="Billing" />} />

@@ -8,12 +8,17 @@ import {
     Folder,
     Receipt,
     Settings,
+    Building2,
+    Database,
+    Upload,
+    UserCog,
 } from 'lucide-react';
 
 export const Sidebar = () => {
     const user = useAppSelector((state) => state.auth.user);
     const firm = useAppSelector((state) => state.auth.firm);
     const isAdmin = user?.role === 'admin';
+    const isSuperAdmin = user?.role === 'super_admin';
 
     const tier = firm?.subscription_tier ?? 'trial';
     const tierLabel = tier.charAt(0).toUpperCase() + tier.slice(1);
@@ -37,9 +42,14 @@ export const Sidebar = () => {
                     </div>
                     <span className="font-bold text-slate-900 text-base">CAlite</span>
                 </div>
-                {firm?.name && (
+                {firm?.name && !isSuperAdmin && (
                     <p className="text-xs text-slate-500 mt-1 truncate pl-0.5" title={firm.name}>
                         {firm.name}
+                    </p>
+                )}
+                {isSuperAdmin && (
+                    <p className="text-xs text-indigo-600 mt-1 truncate pl-0.5 font-semibold">
+                        Global Administrator
                     </p>
                 )}
             </div>
@@ -53,75 +63,101 @@ export const Sidebar = () => {
                     </p>
                     <div className="space-y-0.5">
                         <NavItem label="Dashboard" to="/dashboard" icon={LayoutDashboard} end />
-                        <NavItem label="Clients" to="/clients" icon={Users} />
+                        {!isSuperAdmin && <NavItem label="Clients" to="/clients" icon={Users} />}
+                        {!isSuperAdmin && isAdmin && (
+                            <NavItem label="Import Clients" to="/clients/import" icon={Upload} />
+                        )}
                     </div>
                 </div>
 
                 {/* COMPLIANCE & WORK */}
-                <div>
-                    <p className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase px-3 mb-2">
-                        Compliance & Work
-                    </p>
-                    <div className="space-y-0.5">
-                        <NavItem
-                            label="Compliance"
-                            to="/compliance"
-                            icon={CheckCircle}
-                            isDisabled
-                            disabledTooltip="Coming in Layer 3"
-                        />
-                        <NavItem
-                            label="Tasks"
-                            to="/tasks"
-                            icon={ClipboardList}
-                            isDisabled
-                            disabledTooltip="Coming in Layer 5"
-                        />
-                        <NavItem
-                            label="Documents"
-                            to="/documents"
-                            icon={Folder}
-                            isDisabled
-                            disabledTooltip="Coming in Layer 5"
-                        />
+                {!isSuperAdmin && (
+                    <div>
+                        <p className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase px-3 mb-2">
+                            Compliance & Work
+                        </p>
+                        <div className="space-y-0.5">
+                            <NavItem
+                                label="Compliance"
+                                to="/compliance"
+                                icon={CheckCircle}
+                            />
+                            <NavItem
+                                label="Compliance Library"
+                                to="/compliance/library"
+                                icon={Database}
+                            />
+                            <NavItem
+                                label="Tasks"
+                                to="/tasks"
+                                icon={ClipboardList}
+                                isDisabled
+                                disabledTooltip="Coming in Layer 5"
+                            />
+                            <NavItem
+                                label="Documents"
+                                to="/documents"
+                                icon={Folder}
+                                isDisabled
+                                disabledTooltip="Coming in Layer 5"
+                            />
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* BILLING */}
-                <div>
-                    <p className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase px-3 mb-2">
-                        Billing
-                    </p>
-                    <div className="space-y-0.5">
-                        <NavItem
-                            label="Billing"
-                            to="/billing"
-                            icon={Receipt}
-                            isDisabled
-                            disabledTooltip="Coming in Layer 5"
-                        />
+                {!isSuperAdmin && (
+                    <div>
+                        <p className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase px-3 mb-2">
+                            Billing
+                        </p>
+                        <div className="space-y-0.5">
+                            <NavItem
+                                label="Billing"
+                                to="/billing"
+                                icon={Receipt}
+                                isDisabled
+                                disabledTooltip="Coming in Layer 5"
+                            />
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* ADMIN — only visible to admins */}
                 {isAdmin && (
                     <div>
                         <p className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase px-3 mb-2">
-                            Admin
+                            Firm Admin
                         </p>
                         <div className="space-y-0.5">
                             <NavItem label="Settings" to="/settings" icon={Settings} />
+                            <NavItem label="Team Members" to="/settings/users" icon={UserCog} />
+                        </div>
+                    </div>
+                )}
+
+                {/* SUPER ADMIN */}
+                {isSuperAdmin && (
+                    <div>
+                        <p className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase px-3 mb-2">
+                            Platform
+                        </p>
+                        <div className="space-y-0.5">
+                            <NavItem label="CA Firms" to="/platform/firms" icon={Building2} />
+                            <NavItem label="Template Library" to="/platform/templates" icon={Database} />
                         </div>
                     </div>
                 )}
             </nav>
 
             {/* Subscription Badge — bottom of sidebar */}
-            <div className="px-4 py-3 border-t border-slate-100">
-                <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${tierColor}`}>
-                    {tierLabel} Plan
+            {!isSuperAdmin && (
+                <div className="px-4 py-3 border-t border-slate-100">
+                    <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${tierColor}`}>
+                        {tierLabel} Plan
+                    </div>
                 </div>
-            </div>
+            )}
         </aside>
     );
 };
