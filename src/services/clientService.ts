@@ -12,6 +12,7 @@ export interface ClientDTO {
     mobile: string | null;
     email: string | null;
     address: string | null;
+    risk_level?: string;
     is_active: boolean;
     created_by: string;
     created_at: string;

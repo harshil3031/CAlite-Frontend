@@ -9,3 +9,19 @@ export const useDashboardSummary = () => {
         refetchOnWindowFocus: true,
     });
 };
+
+export const useDashboardOverdue = (params: any) => {
+    return useQuery({
+        queryKey: ['dashboard', 'overdue', params],
+        queryFn: () => dashboardService.getOverdue(params),
+        staleTime: 30_000,
+    });
+};
+
+export const useDashboardCalendar = (view: 'monthly' | 'weekly', date: string) => {
+    return useQuery({
+        queryKey: ['dashboard', 'calendar', view, date],
+        queryFn: () => dashboardService.getCalendar({ view, date }),
+        staleTime: 30_000,
+    });
+};

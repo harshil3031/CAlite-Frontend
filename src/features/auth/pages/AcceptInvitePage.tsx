@@ -3,8 +3,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { useAppDispatch } from '../../../store';
-import { setCredentials } from '../../../store/authSlice';
 import type { ApiError } from '../../../services/authService';
 import { authService } from '../../../services/authService';
 
@@ -31,7 +29,6 @@ const acceptInviteSchema = z.object({
 type AcceptInviteFormData = z.infer<typeof acceptInviteSchema>;
 
 export const AcceptInvitePage = () => {
-    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const [isLoading, setIsLoading] = useState(false);
@@ -60,16 +57,15 @@ export const AcceptInvitePage = () => {
             setError(null);
             setIsLoading(true);
 
-            const response = await authService.acceptInvite({
-                token,
-                password: data.password,
-            });
+            const response = await authService.acceptInvite(token, data.password);
 
-            if (response && response.user && response.accessToken) {
-                dispatch(setCredentials({ user: response.user, accessToken: response.accessToken }));
-                toastSuccess('Invitation accepted. Welcome aboard!');
-                navigate('/dashboard');
-            }
+            // Backend does NOT auto-login - just returns success message
+            toastSuccess(response.message || 'Account activated! Please log in.');
+            
+            // Redirect to login page after 2 seconds
+            setTimeout(() => {
+                navigate('/login');
+            }, 2000);
         } catch (err: unknown) {
             const apiErr = err as ApiError;
             if (apiErr.field) {

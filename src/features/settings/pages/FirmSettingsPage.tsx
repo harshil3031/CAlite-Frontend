@@ -18,6 +18,7 @@ import { ShieldAlert } from 'lucide-react';
 import { useAppSelector } from '../../../store';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import ComplianceSubscriptionsPanel from '../components/ComplianceSubscriptionsPanel';
 
 const firmSettingsSchema = z.object({
     contact_email: z.string().email('Invalid email address').or(z.literal('')),
@@ -199,6 +200,10 @@ export const FirmSettingsPage = () => {
                         </form>
                     </Form>
                 </div>
+            </div>
+
+            <div className="mt-8">
+                <ComplianceSubscriptionsPanel />
             </div>
         </div>
     );

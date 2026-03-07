@@ -90,10 +90,10 @@ export const authService = {
             return handleApiError(error);
         }
     },
-    acceptInvite: async (data: Record<string, unknown>): Promise<AuthResponse> => {
+    acceptInvite: async (token: string, password: string): Promise<{ message: string }> => {
         try {
-            const response = await axiosInstance.post<ApiResponse<AuthResponse>>('/api/v1/auth/accept-invite', data);
-            return response.data.data;
+            const response = await axiosInstance.post('/api/v1/auth/accept-invite', { token, password });
+            return response.data;
         } catch (error) {
             return handleApiError(error);
         }

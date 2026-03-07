@@ -8,17 +8,15 @@ export interface DashboardSummaryDTO {
         byEntityType: Array<{ entityType: string; count: number }>;
     };
     compliance: {
-        status: string;
-        dueThisWeek: number | null;
-        overdue: number | null;
-        riskSummary: string | null;
+        risk_summary: {
+            critical: number;
+            red: number;
+            yellow: number;
+            green: number;
+        };
     } | null;
-    tasks: {
-        pendingTasks: number | null;
-    } | null;
-    activity: {
-        recentActivity: Array<any> | null;
-    } | null;
+    tasks?: any;
+    activity?: any;
 }
 
 export const dashboardService = {
@@ -32,5 +30,13 @@ export const dashboardService = {
             }
             throw new Error('An error occurred while fetching dashboard summary');
         }
+    },
+    getOverdue: async (params?: any) => {
+        const response = await axiosInstance.get('/api/v1/dashboard/overdue', { params });
+        return response.data.data;
+    },
+    getCalendar: async (params?: any) => {
+        const response = await axiosInstance.get('/api/v1/dashboard/calendar', { params });
+        return response.data.data;
     }
 };

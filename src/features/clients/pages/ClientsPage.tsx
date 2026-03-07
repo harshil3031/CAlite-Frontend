@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Upload, Filter, UserPlus } from 'lucide-react';
 import { useClients, useDeactivateClient, useReactivateClient } from '../hooks/useClients';
 import { SearchBar } from '../components/SearchBar';
@@ -22,6 +23,7 @@ const ENTITY_TYPE_OPTIONS = [
 ];
 
 export const ClientsPage = () => {
+    const navigate = useNavigate();
     // Local UI State
     const [search, setSearch] = useState('');
     const [entityType, setEntityType] = useState('');
@@ -71,7 +73,7 @@ export const ClientsPage = () => {
                 </div>
                 <div className="flex items-center gap-2">
                     <button
-                        onClick={() => setIsImportModalOpen(true)}
+                        onClick={() => navigate('/clients/import')}
                         className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm"
                     >
                         <Upload className="w-4 h-4" />
