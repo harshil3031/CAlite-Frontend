@@ -1,9 +1,12 @@
 import { useAppSelector } from '../../../store';
 import { Database, Building2, Users2, Shield, Settings2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { usePlatformSummary } from '../hooks/useDashboard';
 
 export const SuperAdminDashboardPage = () => {
     const user = useAppSelector((state) => state.auth.user);
+    const { data: summaryResponse, isLoading } = usePlatformSummary();
+    const summary = summaryResponse?.data;
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white pb-12">
@@ -27,7 +30,9 @@ export const SuperAdminDashboardPage = () => {
                                 </div>
                             </div>
                             <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400">Total CA Firms</h3>
-                            <p className="text-3xl font-bold mt-1 text-slate-900 dark:text-white">Active</p>
+                            <p className="text-3xl font-bold mt-1 text-slate-900 dark:text-white">
+                                {isLoading ? '...' : (summary?.firms?.total ?? '0')}
+                            </p>
                         </Link>
 
                         <div className="p-6 rounded-2xl glass-card bg-blue-50/50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-500/20">
@@ -37,7 +42,9 @@ export const SuperAdminDashboardPage = () => {
                                 </div>
                             </div>
                             <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400">Total Platform Clients</h3>
-                            <p className="text-3xl font-bold mt-1 text-slate-900 dark:text-white">Active</p>
+                            <p className="text-3xl font-bold mt-1 text-slate-900 dark:text-white">
+                                {isLoading ? '...' : (summary?.clients?.total ?? '0')}
+                            </p>
                         </div>
 
                         <Link to="/platform/templates" className="p-6 rounded-2xl glass-card bg-purple-50/50 dark:bg-purple-900/10 border border-purple-200 dark:border-purple-500/20 hover:shadow-lg transition">
@@ -47,7 +54,9 @@ export const SuperAdminDashboardPage = () => {
                                 </div>
                             </div>
                             <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400">Compliance Templates</h3>
-                            <p className="text-3xl font-bold mt-1 text-slate-900 dark:text-white">Library</p>
+                            <p className="text-3xl font-bold mt-1 text-slate-900 dark:text-white">
+                                {isLoading ? '...' : (summary?.templates?.total ?? '0')}
+                            </p>
                         </Link>
 
                         <div className="p-6 rounded-2xl glass-card bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50">

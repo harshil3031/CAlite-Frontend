@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { dashboardService } from '../../../services/dashboardService';
+import { getPlatformSummary } from '../../../services/complianceService';
 
 export const useDashboardSummary = () => {
     return useQuery({
@@ -7,6 +8,14 @@ export const useDashboardSummary = () => {
         queryFn: () => dashboardService.getSummary(),
         staleTime: 30_000,
         refetchOnWindowFocus: true,
+    });
+};
+
+export const usePlatformSummary = () => {
+    return useQuery({
+        queryKey: ['platform', 'summary'],
+        queryFn: getPlatformSummary,
+        staleTime: 60_000,
     });
 };
 

@@ -42,7 +42,11 @@ export interface ComplianceTemplate {
     short_code: string;
     authority: string;
     frequency: string;
-    is_active: boolean; // active for firm
+    is_active: boolean;
+    due_day: number;
+    due_month_offset: number;
+    applicable_entity_types: string[];
+    version: number;
 }
 
 export const listRecords = async (params: any) => {
@@ -139,5 +143,19 @@ export const getDashboardOverdue = async (params?: { page?: number; limit?: numb
 
 export const getDashboardCalendar = async (view: 'monthly' | 'weekly', date: string) => {
     const response = await axiosInstance.get('/api/v1/dashboard/calendar', { params: { view, date } });
+    return response.data;
+};
+export const createTemplate = async (data: any) => {
+    const response = await axiosInstance.post('/api/v1/compliance/templates', data);
+    return response.data;
+};
+
+export const updateTemplate = async (id: string, data: any) => {
+    const response = await axiosInstance.put(`/api/v1/compliance/templates/${id}`, data);
+    return response.data;
+};
+
+export const getPlatformSummary = async () => {
+    const response = await axiosInstance.get('/api/v1/compliance/platform/summary');
     return response.data;
 };

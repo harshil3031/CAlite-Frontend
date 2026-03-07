@@ -27,6 +27,7 @@ export const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
         country_code: 'IN',
         notes: '',
         is_active: true,
+        change_description: '',
     });
 
     const [error, setError] = useState('');
@@ -44,6 +45,7 @@ export const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
                 country_code: initialData.countryCode || 'IN',
                 notes: initialData.notes || '',
                 is_active: initialData.isActive ?? true,
+                change_description: '',
             });
         } else if (isOpen) {
             // Reset to defaults on open for create
@@ -58,6 +60,7 @@ export const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
                 country_code: 'IN',
                 notes: '',
                 is_active: true,
+                change_description: '',
             });
             setError('');
         }
@@ -69,8 +72,13 @@ export const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
         e.preventDefault();
         setError('');
 
-        if (!formData.name || !formData.short_code || !formData.authority) {
+        if (!formData.name || (!isEditMode && !formData.short_code) || !formData.authority) {
             setError('Please fill in all required fields');
+            return;
+        }
+
+        if (isEditMode && !formData.change_description) {
+            setError('Please provide a description of the changes');
             return;
         }
 
@@ -205,18 +213,33 @@ export const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
                             </div>
 
                             {isEditMode && (
-                                <div className="space-y-1 col-span-2 mt-2">
-                                    <label className="flex items-center gap-2 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={formData.is_active}
-                                            onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                                            className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500"
+                                <>
+                                    <div className="space-y-1 block col-span-2">
+                                        <label className="text-sm font-medium text-slate-700">Change Description *</label>
+                                        <textarea
+                                            value={formData.change_description}
+                                            onChange={(e) => setFormData({ ...formData, change_description: e.target.value })}
+                                            className="w-full px-3 py-2 border border-amber-200 bg-amber-50/30 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none text-sm resize-none"
+                                            rows={2}
+                                            placeholder="Why are you making this change?"
                                             disabled={isLoading}
+                                            required
                                         />
-                                        <span className="text-sm font-medium text-slate-700">Is Active</span>
-                                    </label>
-                                </div>
+                                        <p className="text-[10px] text-amber-600">This will be logged in the template's version history.</p>
+                                    </div>
+                                    <div className="space-y-1 col-span-2 mt-2">
+                                        <label className="flex items-center gap-2 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.is_active}
+                                                onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                                                className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500"
+                                                disabled={isLoading}
+                                            />
+                                            <span className="text-sm font-medium text-slate-700">Is Active</span>
+                                        </label>
+                                    </div>
+                                </>
                             )}
                         </div>
                     </form>

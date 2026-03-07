@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useValidateImport, useConfirmImport } from '../hooks/useImport';
 import { importService, type ImportPreviewDTO } from '../../../services/importService';
 import { toastSuccess, toastError } from '../../../lib/toast';
@@ -13,7 +13,7 @@ export default function ImportPage() {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<ImportPreviewDTO | null>(null);
     const [progress, setProgress] = useState(0);
-    
+
     const validateMutation = useValidateImport();
     const confirmMutation = useConfirmImport();
 
@@ -110,9 +110,8 @@ export default function ImportPage() {
             <div className="mb-8">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                        <div className={`flex items-center justify-center w-10 h-10 rounded-full ${
-                            step === 'upload' ? 'bg-blue-600 text-white' : 'bg-green-600 text-white'
-                        }`}>
+                        <div className={`flex items-center justify-center w-10 h-10 rounded-full ${step === 'upload' ? 'bg-blue-600 text-white' : 'bg-green-600 text-white'
+                            }`}>
                             {step === 'upload' ? '1' : '✓'}
                         </div>
                         <span className={`ml-2 font-medium ${step === 'upload' ? 'text-blue-600' : 'text-green-600'}`}>
@@ -121,24 +120,21 @@ export default function ImportPage() {
                     </div>
                     <div className={`flex-1 h-1 mx-4 ${step !== 'upload' ? 'bg-green-600' : 'bg-gray-300'}`}></div>
                     <div className="flex items-center">
-                        <div className={`flex items-center justify-center w-10 h-10 rounded-full ${
-                            step === 'preview' ? 'bg-blue-600 text-white' : 
-                            step === 'progress' ? 'bg-green-600 text-white' : 'bg-gray-300 text-gray-600'
-                        }`}>
+                        <div className={`flex items-center justify-center w-10 h-10 rounded-full ${step === 'preview' ? 'bg-blue-600 text-white' :
+                                step === 'progress' ? 'bg-green-600 text-white' : 'bg-gray-300 text-gray-600'
+                            }`}>
                             {step === 'progress' ? '✓' : '2'}
                         </div>
-                        <span className={`ml-2 font-medium ${
-                            step === 'preview' ? 'text-blue-600' : 
-                            step === 'progress' ? 'text-green-600' : 'text-gray-600'
-                        }`}>
+                        <span className={`ml-2 font-medium ${step === 'preview' ? 'text-blue-600' :
+                                step === 'progress' ? 'text-green-600' : 'text-gray-600'
+                            }`}>
                             Preview
                         </span>
                     </div>
                     <div className={`flex-1 h-1 mx-4 ${step === 'progress' ? 'bg-green-600' : 'bg-gray-300'}`}></div>
                     <div className="flex items-center">
-                        <div className={`flex items-center justify-center w-10 h-10 rounded-full ${
-                            step === 'progress' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600'
-                        }`}>
+                        <div className={`flex items-center justify-center w-10 h-10 rounded-full ${step === 'progress' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600'
+                            }`}>
                             3
                         </div>
                         <span className={`ml-2 font-medium ${step === 'progress' ? 'text-blue-600' : 'text-gray-600'}`}>
@@ -176,7 +172,7 @@ export default function ImportPage() {
                             onChange={handleFileSelect}
                             className="hidden"
                         />
-                        
+
                         {!selectedFile ? (
                             <>
                                 <svg className="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -222,10 +218,10 @@ export default function ImportPage() {
                     <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <h3 className="text-sm font-medium text-blue-900 mb-2">CSV Format Requirements:</h3>
                         <ul className="text-sm text-blue-800 space-y-1">
-                            <li>• Required columns: full_name, email, risk_level</li>
-                            <li>• Optional columns: phone, date_of_birth, address</li>
-                            <li>• Risk level must be: Low, Medium, High, or Critical</li>
-                            <li>• Email must be unique per client</li>
+                            <li>• Required columns: client_name, email, entity_type, pan, mobile</li>
+                            <li>• Optional columns: gstin, address</li>
+                            <li>• Entity type must be one of: Individual, Proprietorship, etc.</li>
+                            <li>• PAN must be in valid format (e.g., ABCDE1234F)</li>
                         </ul>
                     </div>
                 </div>
@@ -256,9 +252,9 @@ export default function ImportPage() {
                         </div>
                     </div>
 
-                    {preview.errors.length > 0 && (
+                    {(preview?.errors?.length ?? 0) > 0 && (
                         <div className="mb-6">
-                            <h3 className="text-sm font-medium text-red-900 mb-3">Validation Errors ({preview.errors.length})</h3>
+                            <h3 className="text-sm font-medium text-red-900 mb-3">Validation Errors ({preview?.errors?.length ?? 0})</h3>
                             <div className="bg-red-50 border border-red-200 rounded-lg p-4 max-h-64 overflow-y-auto">
                                 <table className="w-full text-sm">
                                     <thead>
@@ -282,9 +278,9 @@ export default function ImportPage() {
                         </div>
                     )}
 
-                    {preview.warnings.length > 0 && (
+                    {(preview?.warnings?.length ?? 0) > 0 && (
                         <div className="mb-6">
-                            <h3 className="text-sm font-medium text-yellow-900 mb-3">Warnings ({preview.warnings.length})</h3>
+                            <h3 className="text-sm font-medium text-yellow-900 mb-3">Warnings ({preview?.warnings?.length ?? 0})</h3>
                             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-h-64 overflow-y-auto">
                                 <table className="w-full text-sm">
                                     <thead>
