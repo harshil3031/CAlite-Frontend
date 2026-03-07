@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { platformService } from '../../../services/platformService';
+import * as complianceService from '../../../services/complianceService';
 import { Database, Plus, CheckCircle, XCircle, Edit2 } from 'lucide-react';
 import { useState } from 'react';
 import { TemplateFormModal } from '../components/TemplateFormModal';
@@ -9,13 +9,15 @@ export const TemplatesPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
 
-    const { data: templates, isLoading, error } = useQuery({
+    const { data: templatesData, isLoading, error } = useQuery({
         queryKey: ['platform', 'templates'],
-        queryFn: platformService.getAllTemplates
+        queryFn: complianceService.listTemplates
     });
 
+    const templates = templatesData?.data;
+
     const createMutation = useMutation({
-        mutationFn: platformService.createTemplate,
+        mutationFn: complianceService.createTemplate,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['platform', 'templates'] });
             setIsModalOpen(false);
@@ -23,7 +25,7 @@ export const TemplatesPage = () => {
     });
 
     const updateMutation = useMutation({
-        mutationFn: ({ id, data }: { id: string, data: any }) => platformService.updateTemplate(id, data),
+        mutationFn: ({ id, data }: { id: string, data: any }) => complianceService.updateTemplate(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['platform', 'templates'] });
             setIsModalOpen(false);

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { X, Upload, CheckCircle2, AlertCircle, Loader2, Download } from 'lucide-react';
 import { useValidateImport, useConfirmImport } from '../hooks/useImport';
 import { importService, type ImportPreviewDTO } from '../../../services/importService';
@@ -161,20 +161,20 @@ export const ImportModal = ({ isOpen, onClose }: ImportModalProps) => {
                                 </div>
                                 <div className="bg-red-50 p-3 rounded-xl border border-red-100 text-red-700">
                                     <p className="text-[10px] uppercase tracking-wider font-bold opacity-70">Errors</p>
-                                    <p className="text-lg font-bold">{preview.errors.length}</p>
+                                    <p className="text-lg font-bold">{preview?.errors?.length ?? 0}</p>
                                 </div>
                                 <div className="bg-amber-50 p-3 rounded-xl border border-amber-100 text-amber-700">
                                     <p className="text-[10px] uppercase tracking-wider font-bold opacity-70">Warnings</p>
-                                    <p className="text-lg font-bold">{preview.warnings.length}</p>
+                                    <p className="text-lg font-bold">{preview?.warnings?.length ?? 0}</p>
                                 </div>
                             </div>
 
                             {/* Errors Table */}
-                            {preview.errors.length > 0 && (
+                            {(preview?.errors?.length ?? 0) > 0 && (
                                 <div className="space-y-2">
                                     <h4 className="flex items-center gap-2 text-sm font-bold text-red-700">
                                         <AlertCircle className="w-4 h-4" />
-                                        Critical Errors ({preview.errors.length})
+                                        Critical Errors ({preview?.errors?.length ?? 0})
                                     </h4>
                                     <div className="max-h-40 overflow-y-auto rounded-lg border border-red-100">
                                         <table className="min-w-full divide-y divide-red-50">
